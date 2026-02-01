@@ -11,26 +11,23 @@ model = genai.GenerativeModel('gemini-1.5-flash')
 
 @app.route('/', methods=['GET', 'POST'])
 def inicio():
-    texto_respuesta = ""
+    texto_ia = ""
     if request.method == 'POST':
-        # Buscamos lo que el usuario escribió en el cuadro "pregunta"
-        duda = request.form.get('pregunta')
-        if duda:
-            res = model.generate_content("Responde como tutor de química: " + duda)
-            texto_respuesta = res.text
+        pregunta_usuario = request.form.get('pregunta')
+        if pregunta_usuario:
+            res = model.generate_content("Responde como tutor de química: " + pregunta_usuario)
+            texto_ia = res.text
 
-    # Usamos render_template_string para que funcione sin carpetas extras
     return render_template_string('''
         <!DOCTYPE html>
         <html>
-        <head><title>Tutor de Química</title></head>
+        <head><title>Tutor de Química</title><meta charset="UTF-8"></head>
         <body style="font-family: Arial; text-align: center; padding: 50px;">
             <h1>Tutor de Química con IA</h1>
             <form action="/" method="post">
-                <input type="text" name="pregunta" placeholder="Escribe tu duda de química..." style="width: 300px; padding: 10px;">
+                <input type="text" name="pregunta" placeholder="Tu duda de química..." style="width: 300px; padding: 10px;" required>
                 <button type="submit" style="padding: 10px;">Preguntar</button>
             </form>
-
             {% if r %}
                 <div style="margin-top: 30px; border: 1px solid #ccc; padding: 20px; background-color: #f9f9f9; text-align: left; display: inline-block; max-width: 80%;">
                     <h3>Respuesta:</h3>
@@ -39,7 +36,7 @@ def inicio():
             {% endif %}
         </body>
         </html>
-    ''', r=texto_respuesta)
+    ''', r=texto_ia)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
