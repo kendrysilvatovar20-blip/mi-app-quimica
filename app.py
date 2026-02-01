@@ -7,7 +7,7 @@ app = Flask(__name__)
 # Configuración de la IA
 api_key = os.environ.get("GOOGLE_API_KEY")
 genai.configure(api_key=api_key)
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-pro')
 @app.route('/', methods=['GET', 'POST'])
 def inicio():
     texto_ia = ""
@@ -39,6 +39,7 @@ def inicio():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+
 
 
 
