@@ -13,15 +13,17 @@ model = genai.GenerativeModel('gemini-1.5-flash')
 def inicio():
     texto_respuesta = ""
     if request.method == 'POST':
-        duda = request.form.get('pregunta')
+        # Usamos 'preguntay' para que coincida con el formulario
+        duda = request.form.get('preguntay')
         if duda:
             try:
+                # Conexión con el modelo Flash
                 res = model.generate_content("Responde como tutor de química: " + duda)
                 texto_respuesta = res.text
             except Exception as e:
-                texto_respuesta = "Error de conexión con la IA. Revisa tu LLAVE_API."
+                texto_respuesta = "Error de conexión con la IA. Verifica los módulos."
 
-    # He corregido la 'r' por 'texto_respuesta' para que coincida con el HTML
+    # Diseño completo con TODO en color gris (gray)
     return render_template_string('''
         <!DOCTYPE html>
         <html>
@@ -29,29 +31,24 @@ def inicio():
             <title>Tutor de Química</title>
             <meta charset="utf-8">
         </head>
-        <body style="font-family: Arial; text-align: center; padding: 50px;">
-            <h1>Tutor de Química con IA</h1>
-            <form action="/" method="post">
-                <input type="text" name="pregunta" placeholder="Escribe tu duda de química..." style="width: 300px; padding: 10px;" required>
-                <button type="submit" style="padding: 10px;">Preguntar</button>
+        <body style="font-family: Arial; text-align: center; padding: 50px; color: gray;">
+            <h1 style="color: gray;">Tutor de Química con IA</h1>
+            <form method="post">
+                <input type="text" name="preguntay" placeholder="Escribe tu duda aquí..." style="width: 300px; padding: 10px;">
+                <button type="submit" style="padding: 10px 20px;">Preguntar</button>
             </form>
-
-            {% if r %}
-                <div style="margin-top: 30px; border: 1px solid #ccc; padding: 20px; background-color: #f9f9f9; text-align: left; display: inline-block; max-width: 80%;">
-                    <h3>Respuesta:</h3>
-                    <p style="white-space: pre-wrap;">{{ r }}</p>
-                </div>
-            {% endif %}
+            <div style="margin-top: 30px; white-space: pre-wrap; text-align: left; display: inline-block; max-width: 80%; color: gray;">
+                <h3 style="color: gray;">Respuesta:</h3>
+                <div style="color: gray;">{{ respuesta }}</div>
+            </div>
         </body>
         </html>
-    ''', r=texto_respuesta)
+    ''', respuesta=texto_respuesta)
 
-if __name__ == "__main__":
-    # Render necesita el puerto dinámico para no dar "Internal Server Error"
-    port = int(os.environ.get("PORT", 5000))
+if __name__ == '__main__':
+    # Corregido: puerto 10000 para que abra normal en local y Render
+    port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
-
-
 
 
 
