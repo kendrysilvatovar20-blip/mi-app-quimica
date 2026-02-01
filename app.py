@@ -4,10 +4,10 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-# Configuración de la IA - Usando la variable que ya tienes en Render
-api_key = os.environ.get("GOOGLE_API_KEY")
+# Configuración con llave directa y Gemini 1.5 Flash
+api_key = "AIzaSyAffDqnRJ7HQYkZYUGGOHPyrJUc3tPQZ0"
 genai.configure(api_key=api_key)
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 @app.route('/', methods=['GET', 'POST'])
 def inicio():
@@ -50,6 +50,7 @@ if __name__ == "__main__":
     # Render necesita el puerto dinámico para no dar "Internal Server Error"
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
