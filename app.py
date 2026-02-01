@@ -4,29 +4,38 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-# Configuración de la IA
+# Configuración de la IA - Usando la variable que ya tienes en Render
 api_key = os.environ.get("LLAVE_API")
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel('gemini-pro')
+
 @app.route('/', methods=['GET', 'POST'])
 def inicio():
-    texto_ia = ""
+    texto_respuesta = ""
     if request.method == 'POST':
-        pregunta_usuario = request.form.get('pregunta')
-        if pregunta_usuario:
-            res = model.generate_content("Responde como tutor de química: " + pregunta_usuario)
-            texto_ia = res.text
+        duda = request.form.get('pregunta')
+        if duda:
+            try:
+                res = model.generate_content("Responde como tutor de química: " + duda)
+                texto_respuesta = res.text
+            except Exception as e:
+                texto_respuesta = "Error de conexión con la IA. Revisa tu LLAVE_API."
 
+    # He corregido la 'r' por 'texto_respuesta' para que coincida con el HTML
     return render_template_string('''
         <!DOCTYPE html>
         <html>
-        <head><title>Tutor de Química</title><meta charset="UTF-8"></head>
+        <head>
+            <title>Tutor de Química</title>
+            <meta charset="utf-8">
+        </head>
         <body style="font-family: Arial; text-align: center; padding: 50px;">
             <h1>Tutor de Química con IA</h1>
             <form action="/" method="post">
-                <input type="text" name="pregunta" placeholder="Tu duda de química..." style="width: 300px; padding: 10px;" required>
+                <input type="text" name="pregunta" placeholder="Escribe tu duda de química..." style="width: 300px; padding: 10px;" required>
                 <button type="submit" style="padding: 10px;">Preguntar</button>
             </form>
+
             {% if r %}
                 <div style="margin-top: 30px; border: 1px solid #ccc; padding: 20px; background-color: #f9f9f9; text-align: left; display: inline-block; max-width: 80%;">
                     <h3>Respuesta:</h3>
@@ -35,10 +44,12 @@ def inicio():
             {% endif %}
         </body>
         </html>
-    ''', r=texto_ia)
+    ''', r=texto_respuesta)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+    # Render necesita el puerto dinámico para no dar "Internal Server Error"
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
 
 
 
